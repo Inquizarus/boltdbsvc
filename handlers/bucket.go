@@ -1,0 +1,105 @@
+package handlers
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/boltdb/bolt"
+	"github.com/inquizarus/gorest"
+	"github.com/sirupsen/logrus"
+)
+
+// MakeBucketHandler creates handler for bucket interactions
+func MakeBucketHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
+	return &gorest.BaseHandler{
+		Name: "bucket",
+		Path: "/buckets/{name}",
+		Get: func(_ http.ResponseWriter, r *http.Request, _ map[string]string) {
+			defer r.Body.Close()
+		},
+		Post: func(w http.ResponseWriter, r *http.Request, p map[string]string) {
+			var response Response
+			defer r.Body.Close()
+			name := p["name"]
+			logger.Printf(`trying to create bucket with name %s`, name)
+			err := db.Update(func(tx *bolt.Tx) error {
+				_, err := tx.CreateBucket([]byte(name))
+				if nil != err {
+					return fmt.Errorf("create bucket: %s", err)
+				}
+				return nil
+			})
+			if nil != err {
+				logger.Println(err)
+				response.AddError(err)
+				writeResponse(w, response)
+				w.WriteHeader(http.StatusConflict)
+				return
+			}
+			logger.Printf(`successfully created bucket with name %s`, name)
+			response.Meta.Success = true
+			writeResponse(w, response)
+		},
+		Delete: func(w http.ResponseWriter, r *http.Request, p map[string]string) {
+			var response Response
+			defer r.Body.Close()
+			name := p["name"]
+			err := db.Update(func(tx *bolt.Tx) error {
+				err := tx.DeleteBucket([]byte(name))
+				if nil != err {
+					return fmt.Errorf("delete bucket: %s", err)
+				}
+				return nil
+			})
+			if nil != err {
+				logger.Println(err)
+				response.AddError(err)
+				writeResponse(w, response)
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			response.Meta.Success = true
+			writeResponse(w, response)
+		},
+	}
+}
+
+// MakeListBucketHandler creates handler for listing buckets
+func MakeListBucketHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
+	return &gorest.BaseHandler{
+		Name: "buckets",
+		Path: "/buckets",
+		Get: func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			var buckets []string
+			var response Response
+			defer r.Body.Close()
+			err := db.View(func(tx *bolt.Tx) error {
+				err := tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
+					buckets = append(buckets, string(name))
+					return nil
+				})
+				if nil != err {
+					return err
+				}
+				return nil
+			})
+			if nil != err {
+				logger.Println(err)
+				response.AddError(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				writeResponse(w, response)
+				return
+			}
+			response.Meta.Success = true
+			response.Data = buckets
+			writeResponse(w, response)
+		},
+	}
+}
+
+func writeResponse(w http.ResponseWriter, response Response) error {
+	bbytes, _ := json.Marshal(response)
+	w.Write(bbytes)
+	return nil
+}
