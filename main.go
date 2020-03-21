@@ -50,6 +50,7 @@ func makeHandlers(db *bolt.DB, logger log.StdLogger) []gorest.Handler {
 	return []gorest.Handler{
 		handlers.MakeBucketHandler(db, logger),
 		handlers.MakeListBucketHandler(db, logger),
+		handlers.MakeItemHandler(db, logger),
 	}
 }
 
