@@ -11,21 +11,32 @@ import (
 	"github.com/inquizarus/boltdbsvc/middlewares"
 	gorest "github.com/inquizarus/gorest"
 	log "github.com/sirupsen/logrus"
+	viper "github.com/spf13/viper"
 )
 
 func main() {
+	configure()
 	logger := makeLogger(os.Stdout)
-	db, err := bolt.Open("svc.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+	opts := &bolt.Options{Timeout: 1 * time.Second, ReadOnly: viper.GetBool("reader")}
+	db, err := bolt.Open(viper.GetString("db"), 0600, opts)
 	if nil != err {
 		logger.Fatal(fmt.Errorf(`Database connection error: %v`, err))
 	}
 	serveConfig := gorest.ServeConfig{
-		Port:        "8080",
+		Port:        viper.GetString("port"),
 		Logger:      logger,
 		Middlewares: makeMiddlewares(logger),
 		Handlers:    makeHandlers(db, logger),
 	}
 	start(serveConfig)
+}
+
+func configure() {
+	viper.SetEnvPrefix("boltdbsvc")
+	viper.AutomaticEnv()
+	viper.SetDefault("port", "8080")
+	viper.SetDefault("db", "boltdbsvc.db")
+	viper.SetDefault("reader", false)
 }
 
 func start(cfg gorest.ServeConfig) {
