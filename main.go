@@ -8,7 +8,6 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/inquizarus/boltdbsvc/handlers"
-	"github.com/inquizarus/boltdbsvc/middlewares"
 	gorest "github.com/inquizarus/gorest"
 	log "github.com/sirupsen/logrus"
 	viper "github.com/spf13/viper"
@@ -46,7 +45,6 @@ func start(cfg gorest.ServeConfig) {
 func makeMiddlewares(logger log.StdLogger) []gorest.Middleware {
 	return []gorest.Middleware{
 		gorest.WithJSONContent(),
-		middlewares.WithRequestLogging(logger),
 	}
 }
 
