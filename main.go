@@ -8,6 +8,7 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/inquizarus/boltdbsvc/handlers"
+	"github.com/inquizarus/boltdbsvc/storages"
 	gorest "github.com/inquizarus/gorest"
 	log "github.com/sirupsen/logrus"
 	viper "github.com/spf13/viper"
@@ -21,11 +22,12 @@ func main() {
 	if nil != err {
 		logger.Fatal(fmt.Errorf(`Database connection error: %v`, err))
 	}
+	s := storages.MakeBoltDBStorage(db)
 	serveConfig := gorest.ServeConfig{
 		Port:        viper.GetString("port"),
 		Logger:      logger,
 		Middlewares: makeMiddlewares(logger),
-		Handlers:    makeHandlers(db, logger),
+		Handlers:    makeHandlers(db, s, logger),
 	}
 	start(serveConfig)
 }
@@ -55,11 +57,11 @@ func makeLogger(o io.Writer) log.StdLogger {
 	return logger
 }
 
-func makeHandlers(db *bolt.DB, logger log.StdLogger) []gorest.Handler {
+func makeHandlers(db *bolt.DB, s storages.Storage, logger log.StdLogger) []gorest.Handler {
 	return []gorest.Handler{
-		handlers.MakeBucketHandler(db, logger),
+		handlers.MakeBucketHandler(s, logger),
 		handlers.MakeListBucketHandler(db, logger),
-		handlers.MakeItemHandler(db, logger),
+		handlers.MakeItemHandler(s, logger),
 	}
 }
 

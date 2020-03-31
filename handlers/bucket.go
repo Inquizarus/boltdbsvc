@@ -1,16 +1,15 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/boltdb/bolt"
+	"github.com/inquizarus/boltdbsvc/storages"
 	"github.com/inquizarus/gorest"
 	"github.com/sirupsen/logrus"
 )
 
 // MakeBucketHandler creates handler for bucket interactions
-func MakeBucketHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
+func MakeBucketHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler {
 	return &gorest.BaseHandler{
 		Name: "bucket",
 		Path: "/buckets/{name}",
@@ -26,13 +25,7 @@ func MakeBucketHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 			defer r.Body.Close()
 			name := p["name"]
 			logger.Printf(`trying to create bucket with name %s`, name)
-			err := db.Update(func(tx *bolt.Tx) error {
-				_, err := tx.CreateBucket([]byte(name))
-				if nil != err {
-					return fmt.Errorf("create bucket: %s", err)
-				}
-				return nil
-			})
+			err := s.CreateBucket([]byte(name))
 			if nil != err {
 				logger.Println(err)
 				response.AddError(err)
@@ -48,13 +41,7 @@ func MakeBucketHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 			var response Response
 			defer r.Body.Close()
 			name := p["name"]
-			err := db.Update(func(tx *bolt.Tx) error {
-				err := tx.DeleteBucket([]byte(name))
-				if nil != err {
-					return fmt.Errorf("delete bucket: %s", err)
-				}
-				return nil
-			})
+			err := s.DeleteBucket([]byte(name))
 			if nil != err {
 				logger.Println(err)
 				response.AddError(err)

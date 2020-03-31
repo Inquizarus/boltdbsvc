@@ -7,14 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/boltdb/bolt"
 	"github.com/inquizarus/boltdbsvc/models"
+	"github.com/inquizarus/boltdbsvc/storages"
 	"github.com/inquizarus/gorest"
 	"github.com/sirupsen/logrus"
 )
 
 // MakeItemHandler creates handler for item interactions
-func MakeItemHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
+func MakeItemHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler {
 	return &gorest.BaseHandler{
 		Name: "bucket",
 		Path: "/buckets/{bucket_name}/items/{item_name}",
@@ -25,17 +25,7 @@ func MakeItemHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 			bucketName := p["bucket_name"]
 			itemName := p["item_name"]
 			logger.Println(fmt.Sprintf("trying to retrieve %s from bucket %s", itemName, bucketName))
-			err := db.View(func(tx *bolt.Tx) error {
-				bucket := tx.Bucket([]byte(bucketName))
-				if nil == bucket {
-					return fmt.Errorf("bucket with name %s does not exist", bucketName)
-				}
-				itemBytes := bucket.Get([]byte(itemName))
-				return json.Unmarshal(itemBytes, &item)
-			})
-			if nil == err && 1 > len(item.Content) {
-				err = fmt.Errorf("item with name %s does not exist", itemName)
-			}
+			itemBytes, err := s.GetItemFromBucket([]byte(itemName), []byte(bucketName))
 			if nil != err {
 				logger.Println(fmt.Errorf("could not retrieve %s from bucket %s: %v", itemName, bucketName, err))
 				response.AddError(err)
@@ -43,6 +33,7 @@ func MakeItemHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 				writeResponse(w, response)
 				return
 			}
+			json.Unmarshal(itemBytes, &item)
 			logger.Println(fmt.Sprintf("successfully retrieved %s from bucket %s", itemName, bucketName))
 			w.Write(item.Content)
 		},
@@ -58,13 +49,7 @@ func MakeItemHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 				item.Content = body
 				item.Meta.CreatedAt = time.Now().Unix()
 				if itemBytes, err := json.Marshal(item); nil == err {
-					err = db.Update(func(tx *bolt.Tx) error {
-						bucket := tx.Bucket([]byte(bucketName))
-						if nil == bucket {
-							return fmt.Errorf("bucket with name %s does not exist", bucketName)
-						}
-						return bucket.Put([]byte(itemName), itemBytes)
-					})
+					err = s.AddItemToBucket([]byte(itemName), []byte(bucketName), itemBytes)
 				}
 
 			}
@@ -85,13 +70,7 @@ func MakeItemHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 			bucketName := p["bucket_name"]
 			itemName := p["item_name"]
 			logger.Println(fmt.Sprintf("trying to delete %s from bucket %s", itemName, bucketName))
-			err := db.Update(func(tx *bolt.Tx) error {
-				bucket := tx.Bucket([]byte(bucketName))
-				if nil == bucket {
-					return fmt.Errorf("bucket with name %s does not exist", bucketName)
-				}
-				return bucket.Delete([]byte(itemName))
-			})
+			err := s.DeleteItemFromBucket([]byte(itemName), []byte(bucketName))
 			if nil != err {
 				logger.Println(fmt.Errorf("could not delete %s from bucket %s: %v", itemName, bucketName, err))
 				response.AddError(err)
