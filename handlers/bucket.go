@@ -14,8 +14,12 @@ func MakeBucketHandler(db *bolt.DB, logger logrus.StdLogger) gorest.Handler {
 	return &gorest.BaseHandler{
 		Name: "bucket",
 		Path: "/buckets/{name}",
-		Get: func(_ http.ResponseWriter, r *http.Request, _ map[string]string) {
+		Get: func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			var response Response
 			defer r.Body.Close()
+			response.Meta.Message = "not implemented"
+			response.Meta.Success = true
+			writeResponse(w, response)
 		},
 		Post: func(w http.ResponseWriter, r *http.Request, p map[string]string) {
 			var response Response

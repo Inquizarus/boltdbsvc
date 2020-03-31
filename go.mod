@@ -7,4 +7,5 @@ require (
 	github.com/inquizarus/gorest v0.2.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
+	github.com/stretchr/testify v1.5.1
 )
