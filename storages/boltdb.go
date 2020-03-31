@@ -75,7 +75,7 @@ func (bs *BoltDBStorage) GetItemFromBucket(k []byte, b []byte) ([]byte, error) {
 	}
 	err = bs.db.View(func(t *bolt.Tx) error {
 		v = t.Bucket(b).Get(k)
-		if 1 > len(v) {
+		if nil == v {
 			return fmt.Errorf("could not find any content under the key %s", k)
 		}
 		return nil
