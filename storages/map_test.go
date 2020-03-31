@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	bucket = "bucket1"
-	key    = "key1"
-	value  = "value1"
-)
-
 func TestItCanGetBucket(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
