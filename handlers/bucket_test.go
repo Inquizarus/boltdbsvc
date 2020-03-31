@@ -7,7 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/inquizarus/boltdbsvc/handlers"
+	"github.com/inquizarus/boltdbsvc/storages"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,6 +23,40 @@ func TestThatTheBucketHandlerWorks(t *testing.T) {
 	h.Handle(w, r)
 	bbytes, _ := ioutil.ReadAll(w.Body)
 	assert.Equal(t, []byte(`{"meta":{"success":true,"message":"not implemented"}}`), bbytes)
+}
+
+func TestBucketPostHandlerWorking(t *testing.T) {
+	logger := logrus.New()
+	logger.Out = &SliceWriter{}
+	s := storages.MapStorage{
+		Map: map[string]map[string][]byte{},
+	}
+	h := handlers.MakeBucketHandler(&s, logger)
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodPost, "/buckets/bucket1", strings.NewReader(""))
+	h.Handle(w, r)
+	bbytes, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, []byte(`{"meta":{"success":true}}`), bbytes)
+	assert.NotEmpty(t, s.GetBuckets())
+}
+
+func TestBucketDeleteHandlerWorking(t *testing.T) {
+	logger := logrus.New()
+	logger.Out = &SliceWriter{}
+	s := storages.MapStorage{
+		Map: map[string]map[string][]byte{
+			"bucket1": map[string][]byte{},
+		},
+	}
+	h := handlers.MakeBucketHandler(&s, logger)
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodDelete, "/buckets/bucket1", strings.NewReader(""))
+	m := mux.NewRouter()
+	m.Handle(h.GetPath(), http.HandlerFunc(h.Handle))
+	m.ServeHTTP(w, r)
+	bbytes, _ := ioutil.ReadAll(w.Body)
+	assert.Equal(t, []byte(`{"meta":{"success":true}}`), bbytes)
+	assert.Empty(t, s.GetBuckets())
 }
 
 type SliceWriter struct{}
