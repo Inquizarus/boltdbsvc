@@ -27,6 +27,16 @@ func TestItReturnsErrorWhenBucketDoesNotExist(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestItCanGetBuckets(t *testing.T) {
+	s := storages.MapStorage{
+		Map: map[string]map[string][]byte{
+			bucket: map[string][]byte{},
+		},
+	}
+	buckets := s.GetBuckets()
+	assert.NotEmpty(t, buckets)
+}
+
 func TestItCanCreateBucket(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{},

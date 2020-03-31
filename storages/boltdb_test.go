@@ -30,6 +30,15 @@ func TestBoltDBItCanGetBucket(t *testing.T) {
 	os.Remove(boltDbPath)
 }
 
+func TestBoltDBItCanGetBuckets(t *testing.T) {
+	db, _ := bolt.Open(boltDbPath, 0600, nil)
+	s := storages.MakeBoltDBStorage(db)
+	s.CreateBucket([]byte(bucket))
+	buckets := s.GetBuckets()
+	assert.NotEmpty(t, buckets)
+	os.Remove(boltDbPath)
+}
+
 func TestBoltDBItCanCreateBucket(t *testing.T) {
 	db, _ := bolt.Open(boltDbPath, 0600, nil)
 	s := storages.MakeBoltDBStorage(db)

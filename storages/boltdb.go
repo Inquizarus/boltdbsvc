@@ -39,6 +39,19 @@ func (bs *BoltDBStorage) GetBucket(name []byte) (models.Bucket, error) {
 	return models.Bucket{}, err
 }
 
+// GetBuckets implementation for boltdb
+func (bs *BoltDBStorage) GetBuckets() [][]byte {
+	var buckets [][]byte
+	bs.db.View(func(tx *bolt.Tx) error {
+		tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
+			buckets = append(buckets, name)
+			return nil
+		})
+		return nil
+	})
+	return buckets
+}
+
 // DeleteBucket implementation for boltdb
 func (bs *BoltDBStorage) DeleteBucket(name []byte) error {
 	err := bs.db.Update(func(t *bolt.Tx) error {

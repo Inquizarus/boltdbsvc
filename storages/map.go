@@ -26,6 +26,15 @@ func (ms *MapStorage) GetBucket(name []byte) (models.Bucket, error) {
 	return bucket, nil
 }
 
+// GetBuckets implementation for map
+func (ms *MapStorage) GetBuckets() [][]byte {
+	var buckets [][]byte
+	for bucket := range ms.Map {
+		buckets = append(buckets, []byte(bucket))
+	}
+	return buckets
+}
+
 // DeleteBucket implementation for map
 func (ms *MapStorage) DeleteBucket(name []byte) error {
 	_, ok := ms.Map[string(name)]

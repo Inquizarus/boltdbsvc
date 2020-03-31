@@ -7,6 +7,7 @@ import "github.com/inquizarus/boltdbsvc/models"
 type Storage interface {
 	CreateBucket([]byte) error
 	GetBucket([]byte) (models.Bucket, error)
+	GetBuckets() [][]byte
 	DeleteBucket([]byte) error
 	AddItemToBucket([]byte, []byte, []byte) error
 	GetItemFromBucket([]byte, []byte) ([]byte, error)
