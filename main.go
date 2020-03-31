@@ -27,7 +27,7 @@ func main() {
 		Port:        viper.GetString("port"),
 		Logger:      logger,
 		Middlewares: makeMiddlewares(logger),
-		Handlers:    makeHandlers(db, s, logger),
+		Handlers:    makeHandlers(s, logger),
 	}
 	start(serveConfig)
 }
@@ -57,10 +57,10 @@ func makeLogger(o io.Writer) log.StdLogger {
 	return logger
 }
 
-func makeHandlers(db *bolt.DB, s storages.Storage, logger log.StdLogger) []gorest.Handler {
+func makeHandlers(s storages.Storage, logger log.StdLogger) []gorest.Handler {
 	return []gorest.Handler{
 		handlers.MakeBucketHandler(s, logger),
-		handlers.MakeListBucketHandler(db, logger),
+		handlers.MakeListBucketHandler(s, logger),
 		handlers.MakeItemHandler(s, logger),
 	}
 }
