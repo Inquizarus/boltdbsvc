@@ -3,7 +3,7 @@ package storages
 import (
 	"fmt"
 
-	"github.com/inquizarus/boltdbsvc/models"
+	"github.com/inquizarus/golbag/models"
 )
 
 // MapStorage handles are storage in memory

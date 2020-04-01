@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/boltdb/bolt"
-	"github.com/inquizarus/boltdbsvc/storages"
+	"github.com/inquizarus/golbag/storages"
 	"github.com/stretchr/testify/assert"
 )
 

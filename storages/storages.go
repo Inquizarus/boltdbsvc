@@ -1,6 +1,6 @@
 package storages
 
-import "github.com/inquizarus/boltdbsvc/models"
+import "github.com/inquizarus/golbag/models"
 
 // Storage is the interface for any types of storage when
 // dealing with service data

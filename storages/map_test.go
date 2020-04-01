@@ -3,7 +3,7 @@ package storages_test
 import (
 	"testing"
 
-	"github.com/inquizarus/boltdbsvc/storages"
+	"github.com/inquizarus/golbag/storages"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/inquizarus/boltdbsvc/handlers"
-	"github.com/inquizarus/boltdbsvc/storages"
+	"github.com/inquizarus/golbag/handlers"
+	"github.com/inquizarus/golbag/storages"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )

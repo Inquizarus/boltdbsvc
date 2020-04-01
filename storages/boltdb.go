@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/boltdb/bolt"
-	"github.com/inquizarus/boltdbsvc/models"
+	"github.com/inquizarus/golbag/models"
 )
 
 // BoltDBStorage wrapper implementation for boltdb

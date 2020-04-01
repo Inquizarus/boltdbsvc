@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/inquizarus/boltdbsvc/models"
-	"github.com/inquizarus/boltdbsvc/storages"
+	"github.com/inquizarus/golbag/models"
+	"github.com/inquizarus/golbag/storages"
 	"github.com/inquizarus/gorest"
 	"github.com/sirupsen/logrus"
 )

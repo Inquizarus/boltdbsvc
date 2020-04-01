@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/inquizarus/boltdbsvc/handlers"
-	"github.com/inquizarus/boltdbsvc/storages"
+	"github.com/inquizarus/golbag/handlers"
+	"github.com/inquizarus/golbag/storages"
 	gorest "github.com/inquizarus/gorest"
 	log "github.com/sirupsen/logrus"
 	viper "github.com/spf13/viper"
@@ -33,10 +33,10 @@ func main() {
 }
 
 func configure() {
-	viper.SetEnvPrefix("boltdbsvc")
+	viper.SetEnvPrefix("golbag")
 	viper.AutomaticEnv()
 	viper.SetDefault("port", "8080")
-	viper.SetDefault("db", "boltdbsvc.db")
+	viper.SetDefault("db", "golbag.db")
 	viper.SetDefault("reader", false)
 }
 
