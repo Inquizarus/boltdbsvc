@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/inquizarus/golbag/handlers"
-	"github.com/inquizarus/golbag/storages"
+	"github.com/inquizarus/golbag/pkg/handlers"
+	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -45,7 +45,7 @@ func TestBucketDeleteHandlerWorking(t *testing.T) {
 	logger.Out = &SliceWriter{}
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			"bucket1": map[string][]byte{},
+			"bucket1": {},
 		},
 	}
 	h := handlers.MakeBucketHandler(&s, logger)

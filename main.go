@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/inquizarus/golbag/handlers"
-	"github.com/inquizarus/golbag/storages"
+	"github.com/inquizarus/golbag/pkg/handlers"
+	"github.com/inquizarus/golbag/pkg/storages"
 	gorest "github.com/inquizarus/gorest"
 	log "github.com/sirupsen/logrus"
 	viper "github.com/spf13/viper"

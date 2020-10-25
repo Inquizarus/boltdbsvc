@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/inquizarus/golbag/models"
-	"github.com/inquizarus/golbag/storages"
+	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/inquizarus/gorest"
 	"github.com/sirupsen/logrus"
 )

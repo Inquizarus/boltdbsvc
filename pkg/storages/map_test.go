@@ -3,14 +3,14 @@ package storages_test
 import (
 	"testing"
 
-	"github.com/inquizarus/golbag/storages"
+	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestItCanGetBucket(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{
+			bucket: {
 				key: []byte(value),
 			},
 		},
@@ -30,7 +30,7 @@ func TestItReturnsErrorWhenBucketDoesNotExist(t *testing.T) {
 func TestItCanGetBuckets(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{},
+			bucket: {},
 		},
 	}
 	buckets := s.GetBuckets()
@@ -49,7 +49,7 @@ func TestItCanCreateBucket(t *testing.T) {
 func TestThatItCanDeleteBucket(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{
+			bucket: {
 				key: []byte(value),
 			},
 		},
@@ -64,7 +64,7 @@ func TestThatItReturnsErrorWhenBucketDoesNotExist(t *testing.T) {
 
 func TestThatItCanAddItemToBucket(t *testing.T) {
 	m := map[string]map[string][]byte{
-		bucket: map[string][]byte{},
+		bucket: {},
 	}
 	s := storages.MapStorage{
 		Map: m,
@@ -88,7 +88,7 @@ func TestThatErrorIsReturnedWhenBucketIsNotDefined(t *testing.T) {
 func TestThatItCanGetItemFromBucket(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{
+			bucket: {
 				key: []byte(value),
 			},
 		},
@@ -110,7 +110,7 @@ func TestGetItemErrorWhenBucketDontExist(t *testing.T) {
 func TestGetItemErrorWhenItemDontExist(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{},
+			bucket: {},
 		},
 	}
 	ib, err := s.GetItemFromBucket([]byte(key), []byte(bucket))
@@ -121,7 +121,7 @@ func TestGetItemErrorWhenItemDontExist(t *testing.T) {
 func TestDeleteItemReturnNilOnSuccess(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{
+			bucket: {
 				key: []byte(value),
 			},
 		},
@@ -141,7 +141,7 @@ func TestDeleteItemErrorWhenBucketDontExist(t *testing.T) {
 func TestDeleteItemErrorWhenItemDontExist(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{
-			bucket: map[string][]byte{},
+			bucket: {},
 		},
 	}
 	err := s.DeleteItemFromBucket([]byte(key), []byte(bucket))
