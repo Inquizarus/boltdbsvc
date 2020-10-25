@@ -28,11 +28,9 @@ func init() {
 	log := logging.NewLogrusLogger(nil)
 
 	rootCmd = makeRootCmd(log)
+	rootCmd.AddCommand(makeServeCmd(log))
 
-	rootCmd.PersistentFlags().StringVarP(&port, portVarName, portVarShortName, portVarDefaultValue, "Define which port should be used.")
 	rootCmd.PersistentFlags().StringVarP(&database, databaseVarName, databaseVarShortName, databaseVarDefaultValue, "Define which file to use for database.")
-
-	viper.BindPFlag(portVarName, rootCmd.PersistentFlags().Lookup(portVarName))
 	viper.BindPFlag(databaseVarName, rootCmd.PersistentFlags().Lookup(databaseVarName))
 }
 
