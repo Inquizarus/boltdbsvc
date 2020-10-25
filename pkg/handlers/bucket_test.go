@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/inquizarus/golbag/pkg/handlers"
+	"github.com/inquizarus/golbag/pkg/logging"
 	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,7 @@ import (
 func TestThatTheBucketHandlerWorks(t *testing.T) {
 	logger := logrus.New()
 	logger.Out = &SliceWriter{}
-	h := handlers.MakeBucketHandler(nil, logger)
+	h := handlers.MakeBucketHandler(nil, logging.NewLogrusLogger(logger))
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/", strings.NewReader(""))
 	h.Handle(w, r)
@@ -31,7 +32,7 @@ func TestBucketPostHandlerWorking(t *testing.T) {
 	s := storages.MapStorage{
 		Map: map[string]map[string][]byte{},
 	}
-	h := handlers.MakeBucketHandler(&s, logger)
+	h := handlers.MakeBucketHandler(&s, logging.NewLogrusLogger(logger))
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodPost, "/buckets/bucket1", strings.NewReader(""))
 	h.Handle(w, r)
@@ -48,7 +49,7 @@ func TestBucketDeleteHandlerWorking(t *testing.T) {
 			"bucket1": {},
 		},
 	}
-	h := handlers.MakeBucketHandler(&s, logger)
+	h := handlers.MakeBucketHandler(&s, logging.NewLogrusLogger(logger))
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodDelete, "/buckets/bucket1", strings.NewReader(""))
 	m := mux.NewRouter()

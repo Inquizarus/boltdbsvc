@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/inquizarus/golbag/pkg/handlers"
+	"github.com/inquizarus/golbag/pkg/logging"
 	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ func TestBucketsHandlerWorking(t *testing.T) {
 			"bucket1": {},
 		},
 	}
-	h := handlers.MakeListBucketHandler(&s, logger)
+	h := handlers.MakeListBucketHandler(&s, logging.NewLogrusLogger(logger))
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/buckets", strings.NewReader(""))
 	h.Handle(w, r)
