@@ -1,15 +1,16 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/inquizarus/golbag/pkg/logging"
 	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/inquizarus/gorest"
-	"github.com/sirupsen/logrus"
 )
 
 // MakeBucketHandler creates handler for bucket interactions
-func MakeBucketHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler {
+func MakeBucketHandler(s storages.Storage, log logging.Logger) gorest.Handler {
 	return &gorest.BaseHandler{
 		Name: "bucket",
 		Path: "/buckets/{name}",
@@ -24,16 +25,16 @@ func MakeBucketHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handl
 			var response Response
 			defer r.Body.Close()
 			name := p["name"]
-			logger.Printf(`trying to create bucket with name %s`, name)
+			log.Debug(fmt.Sprintf(`trying to create bucket with name %s`, name))
 			err := s.CreateBucket([]byte(name))
 			if nil != err {
-				logger.Println(err)
+				log.Error(err)
 				response.AddError(err)
 				writeResponse(w, response)
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
-			logger.Printf(`successfully created bucket with name %s`, name)
+			log.Debug(fmt.Sprintf(`successfully created bucket with name %s`, name))
 			response.Meta.Success = true
 			writeResponse(w, response)
 		},
@@ -43,7 +44,7 @@ func MakeBucketHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handl
 			name := p["name"]
 			err := s.DeleteBucket([]byte(name))
 			if nil != err {
-				logger.Println(err)
+				log.Error(err)
 				response.AddError(err)
 				writeResponse(w, response)
 				w.WriteHeader(http.StatusNotFound)

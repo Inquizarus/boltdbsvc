@@ -8,13 +8,13 @@ import (
 	"time"
 
 	"github.com/inquizarus/golbag/models"
+	"github.com/inquizarus/golbag/pkg/logging"
 	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/inquizarus/gorest"
-	"github.com/sirupsen/logrus"
 )
 
 // MakeItemHandler creates handler for item interactions
-func MakeItemHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler {
+func MakeItemHandler(s storages.Storage, log logging.Logger) gorest.Handler {
 	return &gorest.BaseHandler{
 		Name: "bucket",
 		Path: "/buckets/{bucket_name}/items/{item_name}",
@@ -24,17 +24,17 @@ func MakeItemHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler
 			defer r.Body.Close()
 			bucketName := p["bucket_name"]
 			itemName := p["item_name"]
-			logger.Println(fmt.Sprintf("trying to retrieve %s from bucket %s", itemName, bucketName))
+			log.Debug(fmt.Sprintf(fmt.Sprintf("trying to retrieve %s from bucket %s", itemName, bucketName)))
 			itemBytes, err := s.GetItemFromBucket([]byte(itemName), []byte(bucketName))
 			if nil != err {
-				logger.Println(fmt.Errorf("could not retrieve %s from bucket %s: %v", itemName, bucketName, err))
+				log.Error(fmt.Errorf("could not retrieve %s from bucket %s: %v", itemName, bucketName, err))
 				response.AddError(err)
 				w.WriteHeader(http.StatusConflict)
 				writeResponse(w, response)
 				return
 			}
 			json.Unmarshal(itemBytes, &item)
-			logger.Println(fmt.Sprintf("successfully retrieved %s from bucket %s", itemName, bucketName))
+			log.Debug(fmt.Sprintf("successfully retrieved %s from bucket %s", itemName, bucketName))
 			w.Write(item.Content)
 		},
 		Post: func(w http.ResponseWriter, r *http.Request, p map[string]string) {
@@ -45,7 +45,7 @@ func MakeItemHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler
 			itemName := p["item_name"]
 			body, err := ioutil.ReadAll(r.Body)
 			if nil == err {
-				logger.Println(fmt.Sprintf("trying to create item %s in bucket %s", itemName, bucketName))
+				log.Debug(fmt.Sprintf("trying to create item %s in bucket %s", itemName, bucketName))
 				item.Content = body
 				item.Meta.CreatedAt = time.Now().Unix()
 				if itemBytes, err := json.Marshal(item); nil == err {
@@ -54,13 +54,13 @@ func MakeItemHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler
 
 			}
 			if nil != err {
-				logger.Println(fmt.Errorf("could not create item %s in bucket %s: %v", itemName, bucketName, err))
+				log.Error(fmt.Errorf("could not create item %s in bucket %s: %v", itemName, bucketName, err))
 				response.AddError(err)
 				w.WriteHeader(http.StatusConflict)
 				writeResponse(w, response)
 				return
 			}
-			logger.Println(fmt.Sprintf("successfully created item %s in bucket %s", itemName, bucketName))
+			log.Debug(fmt.Sprintf("successfully created item %s in bucket %s", itemName, bucketName))
 			response.Meta.Success = true
 			writeResponse(w, response)
 		},
@@ -69,16 +69,16 @@ func MakeItemHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler
 			defer r.Body.Close()
 			bucketName := p["bucket_name"]
 			itemName := p["item_name"]
-			logger.Println(fmt.Sprintf("trying to delete %s from bucket %s", itemName, bucketName))
+			log.Debug(fmt.Sprintf("trying to delete %s from bucket %s", itemName, bucketName))
 			err := s.DeleteItemFromBucket([]byte(itemName), []byte(bucketName))
 			if nil != err {
-				logger.Println(fmt.Errorf("could not delete %s from bucket %s: %v", itemName, bucketName, err))
+				log.Error(fmt.Errorf("could not delete %s from bucket %s: %v", itemName, bucketName, err))
 				response.AddError(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				writeResponse(w, response)
 				return
 			}
-			logger.Println(fmt.Sprintf("successfully delete %s from bucket %s", itemName, bucketName))
+			log.Debug(fmt.Sprintf("successfully delete %s from bucket %s", itemName, bucketName))
 			response.Meta.Success = true
 			writeResponse(w, response)
 		},

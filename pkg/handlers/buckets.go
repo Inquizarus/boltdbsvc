@@ -3,13 +3,13 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/inquizarus/golbag/pkg/logging"
 	"github.com/inquizarus/golbag/pkg/storages"
 	"github.com/inquizarus/gorest"
-	"github.com/sirupsen/logrus"
 )
 
 // MakeListBucketHandler creates handler for listing buckets
-func MakeListBucketHandler(s storages.Storage, logger logrus.StdLogger) gorest.Handler {
+func MakeListBucketHandler(s storages.Storage, log logging.Logger) gorest.Handler {
 	return &gorest.BaseHandler{
 		Name: "buckets",
 		Path: "/buckets",
