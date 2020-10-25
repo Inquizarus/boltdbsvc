@@ -16,8 +16,7 @@ import (
 func makeServeCmd(log logging.Logger) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "serve",
-		Short: "",
-		Long:  ``,
+		Short: "Starts the built in HTTP server",
 		Run: func(cmd *cobra.Command, args []string) {
 			opts := &bolt.Options{Timeout: 1 * time.Second, ReadOnly: viper.GetBool("reader")}
 			db, err := bolt.Open(viper.GetString(databaseVarName), 0600, opts)

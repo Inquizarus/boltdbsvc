@@ -9,11 +9,9 @@ var rootCmd *cobra.Command
 
 func makeRootCmd(log logging.Logger) *cobra.Command {
 	return &cobra.Command{
-		Use:   "golbag",
-		Short: "",
-		Long:  ``,
+		Use: "golbag",
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Info("doing some info logging")
+			cmd.Help()
 		},
 	}
 }
