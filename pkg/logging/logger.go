@@ -29,9 +29,34 @@ func (ll *LogrusLogger) mapToLogrusLevel(level Level) logrus.Level {
 	return logrus.Level(100) // Unknown level
 }
 
+// Print passes information to logrus Print func
+func (ll *LogrusLogger) Print(args ...interface{}) {
+	ll.log.Print(args...)
+}
+
+// Printf passes information to logrus Printf func
+func (ll *LogrusLogger) Printf(format string, args ...interface{}) {
+	ll.log.Printf(format, args...)
+}
+
+// Println passes information to logrus Println func
+func (ll *LogrusLogger) Println(args ...interface{}) {
+	ll.log.Println(args...)
+}
+
 // Log passes information to logrus Log func
 func (ll *LogrusLogger) Log(level Level, args ...interface{}) {
 	ll.log.Log(ll.mapToLogrusLevel(level), args...)
+}
+
+// Logf passes information to logrus Logf func
+func (ll *LogrusLogger) Logf(level Level, format string, args ...interface{}) {
+	ll.log.Logf(ll.mapToLogrusLevel(level), format, args...)
+}
+
+// Logln passes information to logrus Logln func
+func (ll *LogrusLogger) Logln(level Level, args ...interface{}) {
+	ll.log.Logln(ll.mapToLogrusLevel(level), args...)
 }
 
 // Trace ...
@@ -64,9 +89,29 @@ func (ll *LogrusLogger) Fatal(args ...interface{}) {
 	ll.Log(FatalLevel, args...)
 }
 
+// Fatalf ...
+func (ll *LogrusLogger) Fatalf(format string, args ...interface{}) {
+	ll.Logf(FatalLevel, format, args...)
+}
+
+// Fatalln ...
+func (ll *LogrusLogger) Fatalln(args ...interface{}) {
+	ll.Logln(FatalLevel, args...)
+}
+
 // Panic ...
 func (ll *LogrusLogger) Panic(args ...interface{}) {
 	ll.Log(PanicLevel, args...)
+}
+
+// Panicf ...
+func (ll *LogrusLogger) Panicf(format string, args ...interface{}) {
+	ll.Logf(PanicLevel, format, args...)
+}
+
+// Panicln ...
+func (ll *LogrusLogger) Panicln(args ...interface{}) {
+	ll.Logln(PanicLevel, args...)
 }
 
 // NewLogrusLogger creates a new LogrusLogger with passed or standard instance of logrus
